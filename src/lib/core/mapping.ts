@@ -1,6 +1,14 @@
 // マッピングの初期値と操作（SPEC §3）
 
-import { CONSONANTS, VOWELS, type ConsonantMap, type VowelMap } from './types';
+import {
+  CONSONANT_GROUPS,
+  CONSONANTS,
+  VOWELS,
+  type Consonant,
+  type ConsonantGroup,
+  type ConsonantMap,
+  type VowelMap,
+} from './types';
 
 /** 0 以上 1 未満を返す乱数関数。テストでは固定値を渡す */
 export type Random = () => number;
@@ -46,4 +54,28 @@ export function shiftVowels(map: VowelMap, step: 1 | -1): VowelMap {
   return Object.fromEntries(
     VOWELS.map((v) => [v, VOWELS[(VOWELS.indexOf(map[v]) + step + n) % n]]),
   ) as VowelMap;
+}
+
+/** 指定したグループの子音（グループの並び順） */
+export function consonantsOf(groups: readonly ConsonantGroup[]): Consonant[] {
+  return (Object.keys(CONSONANT_GROUPS) as ConsonantGroup[])
+    .filter((group) => groups.includes(group))
+    .flatMap((group) => CONSONANT_GROUPS[group]);
+}
+
+/**
+ * 指定したグループの子音だけをシャッフルする（SPEC §3.2）。
+ * 行き先も同じグループの中から選び、対象外の子音は今の設定のまま残す。
+ */
+export function shuffleConsonants(
+  current: ConsonantMap,
+  groups: readonly ConsonantGroup[],
+  withDuplicates: boolean,
+  random: Random = Math.random,
+): ConsonantMap {
+  const targets = consonantsOf(groups);
+  const shuffled = withDuplicates
+    ? shuffleWithDuplicates(targets, random)
+    : shufflePermutation(targets, random);
+  return { ...current, ...shuffled };
 }

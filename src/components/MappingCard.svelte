@@ -8,6 +8,7 @@
     identityConsonantMap,
     identityVowelMap,
     shiftVowels,
+    shuffleConsonants,
     shufflePermutation,
     shuffleWithDuplicates,
     type Consonant,
@@ -17,6 +18,7 @@
   } from '../lib/core';
   import Button from '../lib/ui/Button.svelte';
   import Card from '../lib/ui/Card.svelte';
+  import Checkbox from '../lib/ui/Checkbox.svelte';
   import Select from '../lib/ui/Select.svelte';
 
   let { app }: { app: AppState } = $props();
@@ -37,6 +39,16 @@
 
   const vowelChanged = $derived(VOWELS.some((v) => app.settings.vowelMap[v] !== v));
   const consonantChanged = $derived(CONSONANTS.some((c) => app.settings.consonantMap[c] !== c));
+
+  function toggleShuffleGroup(group: ConsonantGroup, on: boolean) {
+    app.shuffleGroups = on
+      ? [...app.shuffleGroups, group]
+      : app.shuffleGroups.filter((g) => g !== group);
+  }
+
+  function shuffle(withDuplicates: boolean) {
+    app.settings.consonantMap = shuffleConsonants(app.settings.consonantMap, app.shuffleGroups, withDuplicates);
+  }
 </script>
 
 <Card title="マッピング" description="ローマ字の母音・子音をそれぞれ何に置き換えるか。重複も選べます。">
@@ -62,8 +74,18 @@
     <div class="heading">
       <h3 id="consonant-heading">子音</h3>
       <div class="tools">
-        <Button size="small" icon="arrow_shuffle" onclick={() => (app.settings.consonantMap = shufflePermutation(CONSONANTS))}>シャッフル</Button>
-        <Button size="small" icon="arrow_shuffle" onclick={() => (app.settings.consonantMap = shuffleWithDuplicates(CONSONANTS))}>シャッフル（重複あり）</Button>
+        <fieldset class="scope">
+          <legend>対象</legend>
+          {#each groupEntries as [group] (group)}
+            <Checkbox
+              size="small"
+              label={GROUP_LABELS[group]}
+              bind:checked={() => app.shuffleGroups.includes(group), (on) => toggleShuffleGroup(group, on)}
+            />
+          {/each}
+        </fieldset>
+        <Button size="small" icon="arrow_shuffle" disabled={app.shuffleGroups.length === 0} title="対象のグループの中だけで入れ替える" onclick={() => shuffle(false)}>シャッフル</Button>
+        <Button size="small" icon="arrow_shuffle" disabled={app.shuffleGroups.length === 0} title="対象のグループの中だけで入れ替える" onclick={() => shuffle(true)}>シャッフル（重複あり）</Button>
         <Button size="small" appearance="subtle" icon="arrow_counterclockwise" disabled={!consonantChanged} onclick={() => (app.settings.consonantMap = identityConsonantMap())}>リセット</Button>
       </div>
     </div>
@@ -142,7 +164,25 @@
   .tools {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: var(--spacingHorizontalXS);
+  }
+
+  .scope {
+    display: flex;
+    align-items: center;
+    gap: var(--spacingHorizontalS);
+    margin: 0 var(--spacingHorizontalS) 0 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .scope legend {
+    float: left;
+    padding: 0;
+    margin-right: var(--spacingHorizontalXS);
+    color: var(--colorNeutralForeground3);
+    font-size: var(--fontSizeBase200);
   }
 
   .grid {

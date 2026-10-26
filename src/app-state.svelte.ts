@@ -1,6 +1,6 @@
 // 画面全体の状態と保存（SPEC §5, §6）
 
-import { convert } from './lib/core';
+import { CONSONANT_GROUPS, convert, type ConsonantGroup } from './lib/core';
 import { normalizeDraft, resolveStartup, serializeDraft, type Draft } from './lib/settings/draft';
 import { addHistory, normalizeHistory, serializeHistory, type HistoryEntry } from './lib/settings/history';
 import { normalizePresets } from './lib/settings/presets';
@@ -15,6 +15,8 @@ export class AppState {
   presets = $state<Preset[]>([]);
   history = $state<HistoryEntry[]>([]);
   themeMode = $state<ThemeMode>('system');
+  /** 子音シャッフルの対象グループ（SPEC §3.2） */
+  shuffleGroups = $state<ConsonantGroup[]>(Object.keys(CONSONANT_GROUPS) as ConsonantGroup[]);
 
   /** 起動時の復元ダイアログで確認中の前回の作業。確認が済むまで前回の作業は上書きしない */
   pendingRestore = $state<Draft | null>(null);
@@ -39,6 +41,10 @@ export class AppState {
     this.presets = normalizePresets(readStorage(STORAGE_KEYS.presets));
     this.history = normalizeHistory(readStorage(STORAGE_KEYS.history));
     this.themeMode = loadThemeMode();
+    const savedGroups = readStorage<unknown>(STORAGE_KEYS.shuffleGroups);
+    if (Array.isArray(savedGroups)) {
+      this.shuffleGroups = savedGroups.filter((g): g is ConsonantGroup => g in CONSONANT_GROUPS);
+    }
 
     if (shared.settings || shared.text !== null) {
       window.history.replaceState(null, '', location.pathname + location.hash);
@@ -62,6 +68,9 @@ export class AppState {
       });
       $effect(() => {
         this.#save(STORAGE_KEYS.history, serializeHistory($state.snapshot(this.history)));
+      });
+      $effect(() => {
+        this.#save(STORAGE_KEYS.shuffleGroups, $state.snapshot(this.shuffleGroups));
       });
       $effect(() => applyThemeMode(this.themeMode));
     });

@@ -31,6 +31,8 @@ export const STORAGE_KEYS = {
   draft: 'fng:draft',
   presets: 'fng:presets',
   history: 'fng:history',
+  /** 子音シャッフルの対象グループ（画面の好み。共有・プリセットには含めない） */
+  shuffleGroups: 'fng:shuffleGroups',
   /** 旧版。設定だけを保存していた頃のキー */
   legacySettings: 'fng:settings',
 } as const;

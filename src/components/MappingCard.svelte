@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { AppState } from '../app-state.svelte';
   import {
+    CONSONANT_EXAMPLES,
     CONSONANT_GROUPS,
     CONSONANTS,
     VOWELS,
@@ -12,6 +13,7 @@
     type Consonant,
     type ConsonantGroup,
     type Vowel,
+    consonantKanaList,
   } from '../lib/core';
   import Button from '../lib/ui/Button.svelte';
   import Card from '../lib/ui/Card.svelte';
@@ -30,7 +32,7 @@
   const vowelOptions = VOWELS.map((v) => ({ value: v, label: v }));
   const consonantGroups = groupEntries.map(([group, consonants]) => ({
     label: GROUP_LABELS[group],
-    options: consonants.map((c) => ({ value: c, label: c })),
+    options: consonants.map((c) => ({ value: c, label: `${c} ${CONSONANT_EXAMPLES[c]}` })),
   }));
 
   const vowelChanged = $derived(VOWELS.some((v) => app.settings.vowelMap[v] !== v));
@@ -85,10 +87,23 @@
 {/snippet}
 
 {#snippet consonantPair(consonant: Consonant)}
-  <div class="pair" class:changed={app.settings.consonantMap[consonant] !== consonant}>
+  {@const tipId = `consonant-tip-${consonant}`}
+  <div class="pair consonant" class:changed={app.settings.consonantMap[consonant] !== consonant}>
     <span class="from">{consonant}</span>
+    <span class="example" aria-hidden="true">{CONSONANT_EXAMPLES[consonant]}</span>
     <span class="arrow" aria-hidden="true">→</span>
-    <Select size="small" ariaLabel="{consonant} の置き換え先" groups={consonantGroups} bind:value={app.settings.consonantMap[consonant]} />
+    <Select
+      size="small"
+      ariaLabel="{consonant} の置き換え先"
+      describedBy={tipId}
+      groups={consonantGroups}
+      bind:value={app.settings.consonantMap[consonant]}
+    />
+    <!-- マウスを乗せる・セレクトにフォーカスすると、その子音のかなを全部出す -->
+    <span class="tip" role="tooltip" id={tipId}>
+      <span class="tip-consonant">{consonant}</span>
+      <span>{consonantKanaList(consonant).join(' ')}</span>
+    </span>
   </div>
 {/snippet}
 
@@ -136,6 +151,10 @@
     gap: var(--spacingVerticalXS) var(--spacingHorizontalS);
   }
 
+  .grid:has(.consonant) {
+    grid-template-columns: repeat(auto-fill, minmax(176px, 1fr));
+  }
+
   .pair {
     display: grid;
     grid-template-columns: 2.2em auto 1fr;
@@ -143,6 +162,11 @@
     gap: var(--spacingHorizontalXS);
     padding: var(--spacingVerticalXXS) var(--spacingHorizontalXS);
     border-radius: var(--borderRadiusMedium);
+  }
+
+  .pair.consonant {
+    position: relative;
+    grid-template-columns: 2.2em 2.4em auto 1fr;
   }
 
   .pair.changed {
@@ -159,7 +183,46 @@
     color: var(--colorBrandForeground2);
   }
 
+  .example {
+    color: var(--colorNeutralForeground3);
+    font-size: var(--fontSizeBase200);
+    white-space: nowrap;
+  }
+
   .arrow {
     color: var(--colorNeutralForeground3);
+  }
+
+  .tip {
+    position: absolute;
+    bottom: calc(100% + var(--spacingVerticalXXS));
+    left: 0;
+    z-index: 2;
+    display: flex;
+    gap: var(--spacingHorizontalS);
+    padding: var(--spacingVerticalXS) var(--spacingHorizontalS);
+    border: var(--strokeWidthThin) solid var(--colorTransparentStroke);
+    border-radius: var(--borderRadiusMedium);
+    background: var(--colorNeutralBackground1);
+    color: var(--colorNeutralForeground1);
+    box-shadow: var(--shadow16);
+    font-size: var(--fontSizeBase300);
+    white-space: nowrap;
+    pointer-events: none;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity var(--durationFaster) var(--curveEasyEase);
+  }
+
+  .tip-consonant {
+    font-family: var(--fontFamilyMonospace);
+    font-weight: var(--fontWeightSemibold);
+    color: var(--colorBrandForeground1);
+  }
+
+  .pair.consonant:hover .tip,
+  .pair.consonant:focus-within .tip {
+    visibility: visible;
+    opacity: 1;
   }
 </style>

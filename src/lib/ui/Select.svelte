@@ -19,6 +19,8 @@
     groups?: SelectGroup<T>[];
     label?: string;
     ariaLabel?: string;
+    /** 補足説明の要素の id（aria-describedby） */
+    describedBy?: string;
     size?: 'medium' | 'small';
     disabled?: boolean;
     onchange?: (value: T) => void;
@@ -30,6 +32,7 @@
     groups = [],
     label,
     ariaLabel,
+    describedBy,
     size = 'medium',
     disabled = false,
     onchange,
@@ -46,6 +49,7 @@
       bind:value
       {disabled}
       aria-label={ariaLabel}
+      aria-describedby={describedBy}
       onchange={() => onchange?.(value)}
     >
       {#each options as option (option.value)}

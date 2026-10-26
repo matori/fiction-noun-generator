@@ -22,6 +22,7 @@ npm run dev      # 開発サーバー
 npm test         # Vitest
 npm run check    # svelte-check（型チェック）
 npm run build    # 本番ビルド
+npm run images   # OGP 画像と apple-touch-icon を作り直す（Windows の游ゴシックを使う）
 ```
 
 ## ディレクトリ
@@ -47,8 +48,12 @@ src/
   app-state.svelte.ts  # 画面全体の状態、前回の作業の自動保存と起動時の復元（SPEC §5.6）
   App.svelte     # レイアウト
   app.css        # 全体の基本スタイル
+scripts/generate-images.mjs  # OGP 画像・apple-touch-icon の生成
+public/          # favicon.svg、ogp.png、apple-touch-icon.png
 docs/SPEC.md
 ```
+
+- メタ情報・OGP は `index.html` に静的に書く（SPEC §7.1）。`og:url`・`og:image`・`canonical` は絶対 URL。
 
 ## テーマとスタイル
 

@@ -6,7 +6,7 @@
 さくら → sakura → (a→i, k→s, r→m) → sisumi → シスミ
 ```
 
-> **バージョン**: v1.1.1（公開先は未定。ローカルで動作）
+> **バージョン**: v1.2.0（公開先: https://tools.unformedbuilding.com/fiction-noun-generator/）
 
 ## 機能
 
@@ -73,6 +73,12 @@ npm test
 
 ```bash
 npm run build
+```
+
+OGP 画像（`public/ogp.png`）と `public/apple-touch-icon.png` を作り直すとき（Windows の游ゴシックを使います）:
+
+```bash
+npm run images
 ```
 
 ## 参考

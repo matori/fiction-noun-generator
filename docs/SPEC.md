@@ -462,6 +462,24 @@ README の「変換ルール」節と同じ内容をアプリ内でも説明す�
   - ファビコン: 16px でも読めるよう、上半分を右にずらし、色ずれを 1 色にした簡略版（`public/favicon.svg`）。
 - テーマ: OS 設定に追従し、手動でライト／ダークに切り替えもできる。
 
+### 7.1 メタ情報・OGP
+
+公開 URL は `https://tools.unformedbuilding.com/fiction-noun-generator/`。`index.html` に静的に書く（リンクプレビューは JavaScript を実行しないため）。
+
+| 項目 | 内容 |
+|---|---|
+| `<title>`・`og:title` | 創作名詞ジェネレーター｜日本語から架空っぽい名前を生成 |
+| `meta description`・`og:description` | 日本語テキストから架空っぽいテキストを生成します。かなの子音と母音を入れ替えて、どこの言葉でもない人名や地名を作れます。 |
+| `canonical`・`og:url` | 公開 URL（絶対 URL） |
+| `og:image` | `ogp.png`（1200×630、絶対 URL）。`twitter:card` は `summary_large_image` |
+| `theme-color` | ブランドの青（`#0f6cbd`）。ライト／ダーク共通 |
+| `apple-touch-icon` | 180px の PNG。iOS が角を丸めるので、角丸なしの全面青のアイコン |
+| JSON-LD | `WebApplication` 型。名前・URL・説明・日本語・無料。作者名は入れない |
+| `<noscript>` | 一文の説明と、JavaScript を有効にする案内 |
+
+- OGP 画像: ブランドの青の地。中央のパネルに、ロゴとアプリ名（「創作名詞」「ジェネレーター」の 2 行）と、その下に概要「日本語テキストから架空っぽいテキストを生成」。背景全体に、変換例（「おだ・のぶなが → アピ・ラミェリニィ」など。母音を 1 つ進め、子音を d→p・n→r・b→my・g→ny）を薄い文字で斜めに敷き詰める。変換例は生成スクリプトがアプリの変換処理で実際に変換して作る。
+- `ogp.png` と `apple-touch-icon.png` は `npm run images`（`scripts/generate-images.mjs`）で作り、`public/` に置いてコミットする。文字は Windows の游ゴシックで描くため、作り直しは Windows で行う。
+
 ---
 
 ## 8. 技術構成

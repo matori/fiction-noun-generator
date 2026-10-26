@@ -1,7 +1,7 @@
 {
   "name": "fiction-noun-generator",
   "private": true,
-  "version": "1.1.1",
+  "version": "1.2.0",
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -10,13 +10,15 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json"
+    "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json",
+    "images": "node scripts/generate-images.mjs"
   },
   "dependencies": {
     "@fluentui/svg-icons": "1.1.344",
     "@fluentui/tokens": "1.0.0-alpha.24"
   },
   "devDependencies": {
+    "@resvg/resvg-js": "2.6.2",
     "@sveltejs/vite-plugin-svelte": "^7.3.1",
     "@tsconfig/svelte": "^5.0.8",
     "@types/node": "^24.19.2",

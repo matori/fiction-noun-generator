@@ -454,6 +454,7 @@ README の「変換ルール」節と同じ内容をアプリ内でも説明す�
 
 - **Fluent 2** に準拠する。
 - 色・角丸・影・文字サイズ・余白は `@fluentui/tokens`（`1.0.0-alpha.24` に固定）の `webLightTheme` / `webDarkTheme` から取り、CSS 変数として `:root` に流し込む。
+- ただし本文のフォント（`fontFamilyBase`）は Fluent の指定から外し、`sans-serif` だけにする（OS 既定のゴシック体）。
 - コンポーネント（ボタン、セレクト、ラジオ、スイッチ、カード、入力欄）は Svelte で自作し、Fluent 2 の見た目に合わせる。`@fluentui/web-components` は使わない。
 - アイコンは Fluent System Icons（`@fluentui/svg-icons`、`1.1.344` に固定）を個別の SVG として取り込む。ボタンはラベルとアイコンを併用する（ダイアログの閉じるボタンのみアイコンだけ）。
 - アプリのアイコンは、ブランド色（`#0f6cbd`）の角丸の四角に白い「N」をグリッチ風に崩したもの。

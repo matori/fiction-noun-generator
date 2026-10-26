@@ -8,16 +8,17 @@ export type ThemeMode = 'system' | 'light' | 'dark';
 const THEME_KEY = 'fng:theme';
 const STYLE_ID = 'fng-theme-tokens';
 
-/** 日本語のフォールバックを Fluent の欧文フォントの後ろに足す */
-const JAPANESE_FALLBACK = "'Yu Gothic UI', 'Hiragino Sans', 'Noto Sans JP', Meiryo";
+/**
+ * Fluent のトークンから上書きする値。
+ * 本文のフォントは Fluent の Segoe UI 指定をやめ、OS 既定の sans-serif に任せる
+ */
+const OVERRIDES: Partial<Record<keyof Theme, string>> = {
+  fontFamilyBase: 'sans-serif',
+};
 
 function declarations(theme: Theme, keys: readonly string[]): string {
   return keys
-    .map((key) => {
-      let value = String(theme[key as keyof Theme]);
-      if (key === 'fontFamilyBase') value = value.replace(/sans-serif$/, `${JAPANESE_FALLBACK}, sans-serif`);
-      return `--${key}: ${value};`;
-    })
+    .map((key) => `--${key}: ${OVERRIDES[key as keyof Theme] ?? String(theme[key as keyof Theme])};`)
     .join('\n');
 }
 

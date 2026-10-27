@@ -33,6 +33,8 @@ export const STORAGE_KEYS = {
   history: 'fng:history',
   /** 子音シャッフルの対象グループ（画面の好み。共有・プリセットには含めない） */
   shuffleGroups: 'fng:shuffleGroups',
+  /** コピー・一括変換の出力形式（画面の好み） */
+  outputFormat: 'fng:outputFormat',
   /** 旧版。設定だけを保存していた頃のキー */
   legacySettings: 'fng:settings',
 } as const;

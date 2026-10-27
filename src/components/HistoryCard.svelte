@@ -6,6 +6,7 @@
   import { convert } from '../lib/core';
   import { groupHistory, HISTORY_LIMIT, settingsKey, type HistoryEntry, type HistoryGroup } from '../lib/settings/history';
   import type { Settings } from '../lib/settings/settings';
+  import { formatPair } from '../lib/settings/output-format';
   import { formatSummary, summarizeSettings } from '../lib/settings/summary';
   import Button from '../lib/ui/Button.svelte';
   import Card from '../lib/ui/Card.svelte';
@@ -95,7 +96,7 @@
                   </div>
                   <time datetime={entry.createdAt}>{dateFormat.format(new Date(entry.createdAt))}</time>
                   <div class="row-actions">
-                    <Button size="small" appearance="primary" icon="copy" onclick={() => copyText(entry.output)}>コピー</Button>
+                    <Button size="small" appearance="primary" icon="copy" onclick={() => copyText(formatPair(entry, app.outputFormat))}>コピー</Button>
                     {#if group.settings}
                       <Button size="small" appearance="subtle" icon={stagesOpen ? 'chevron_up' : 'chevron_down'} aria-expanded={stagesOpen} onclick={() => toggle(openEntries, entry.id)}>
                         途中経過

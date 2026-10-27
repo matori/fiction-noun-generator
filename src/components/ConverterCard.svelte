@@ -1,8 +1,10 @@
 <script lang="ts">
   import type { AppState } from '../app-state.svelte';
   import { copyText } from '../lib/clipboard';
+  import { OUTPUT_FORMATS, OUTPUT_FORMAT_LABELS, formatPair } from '../lib/settings/output-format';
   import Button from '../lib/ui/Button.svelte';
   import Card from '../lib/ui/Card.svelte';
+  import Select from '../lib/ui/Select.svelte';
   import TextField from '../lib/ui/TextField.svelte';
   import StageText from './StageText.svelte';
 
@@ -18,9 +20,12 @@
     ].filter((stage) => stage !== null),
   );
 
+  const formatOptions = OUTPUT_FORMATS.map((value) => ({ value, label: OUTPUT_FORMAT_LABELS[value] }));
+
   async function copyResult() {
     if (!result.output) return;
-    if (await copyText(result.output)) app.addToHistory();
+    const text = formatPair({ input: app.input, output: result.output }, app.outputFormat);
+    if (await copyText(text)) app.addToHistory();
   }
 </script>
 
@@ -42,6 +47,9 @@
     <span class="label">結果</span>
     <output class="output" class:empty={!result.output}>{result.output || '—'}</output>
     <div class="actions">
+      <div class="format">
+        <Select ariaLabel="コピー形式" options={formatOptions} bind:value={app.outputFormat} />
+      </div>
       <Button appearance="primary" icon="copy" disabled={!result.output} onclick={copyResult}>コピー</Button>
       <Button icon="history" disabled={!result.output} onclick={() => app.addToHistory()}>履歴に追加</Button>
     </div>
@@ -70,6 +78,10 @@
 
   .result .label {
     grid-column: 1 / -1;
+  }
+
+  .format {
+    width: 168px;
   }
 
   .label {

@@ -3,6 +3,7 @@
 import { CONSONANT_GROUPS, convert, type ConsonantGroup } from './lib/core';
 import { normalizeDraft, resolveStartup, serializeDraft, type Draft } from './lib/settings/draft';
 import { addHistory, normalizeHistory, serializeHistory, type HistoryEntry } from './lib/settings/history';
+import { normalizeOutputFormat, type OutputFormat } from './lib/settings/output-format';
 import { normalizePresets } from './lib/settings/presets';
 import { defaultSettings, type Preset, type Settings } from './lib/settings/settings';
 import { parseShareQuery } from './lib/settings/share';
@@ -17,6 +18,8 @@ export class AppState {
   themeMode = $state<ThemeMode>('system');
   /** 子音シャッフルの対象グループ（SPEC §3.2） */
   shuffleGroups = $state<ConsonantGroup[]>(Object.keys(CONSONANT_GROUPS) as ConsonantGroup[]);
+  /** コピー・一括変換の出力形式（SPEC §6.7） */
+  outputFormat = $state<OutputFormat>('output');
 
   /** 起動時の復元ダイアログで確認中の前回の作業。確認が済むまで前回の作業は上書きしない */
   pendingRestore = $state<Draft | null>(null);
@@ -41,6 +44,7 @@ export class AppState {
     this.presets = normalizePresets(readStorage(STORAGE_KEYS.presets));
     this.history = normalizeHistory(readStorage(STORAGE_KEYS.history));
     this.themeMode = loadThemeMode();
+    this.outputFormat = normalizeOutputFormat(readStorage(STORAGE_KEYS.outputFormat));
     const savedGroups = readStorage<unknown>(STORAGE_KEYS.shuffleGroups);
     if (Array.isArray(savedGroups)) {
       this.shuffleGroups = savedGroups.filter((g): g is ConsonantGroup => g in CONSONANT_GROUPS);
@@ -71,6 +75,9 @@ export class AppState {
       });
       $effect(() => {
         this.#save(STORAGE_KEYS.shuffleGroups, $state.snapshot(this.shuffleGroups));
+      });
+      $effect(() => {
+        this.#save(STORAGE_KEYS.outputFormat, this.outputFormat);
       });
       $effect(() => applyThemeMode(this.themeMode));
     });

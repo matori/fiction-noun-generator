@@ -10,12 +10,26 @@
     dismissible?: boolean;
     /** 最大幅（px）。画面が狭いときは画面幅に合わせる */
     maxWidth?: number;
+    /** 閉じるボタン・Esc・背景クリックで閉じる前に呼ぶ。false を返すと閉じない */
+    beforeClose?: () => boolean;
     children: Snippet;
     footer?: Snippet;
   }
 
-  let { open = $bindable(), title, dismissible = true, maxWidth = 600, children, footer }: Props =
-    $props();
+  let {
+    open = $bindable(),
+    title,
+    dismissible = true,
+    maxWidth = 600,
+    beforeClose,
+    children,
+    footer,
+  }: Props = $props();
+
+  function requestClose() {
+    if (beforeClose && !beforeClose()) return;
+    open = false;
+  }
 
   let dialog: HTMLDialogElement;
   const titleId = $props.id();
@@ -31,22 +45,24 @@
   style:--dialog-max-width="{maxWidth}px"
   aria-labelledby={titleId}
   onclose={() => {
-    // dismissible でないとき、ブラウザが Esc の連打などで閉じても開き直す
-    if (!dismissible && open) dialog.showModal();
+    // ブラウザが Esc の連打などで閉じたとき：dismissible でなければ開き直し、
+    // beforeClose があれば確認して、閉じないなら開き直す
+    if (open && (!dismissible || (beforeClose && !beforeClose()))) dialog.showModal();
     else open = false;
   }}
   oncancel={(e) => {
-    if (!dismissible) e.preventDefault();
+    if (!dismissible || beforeClose) e.preventDefault();
+    if (dismissible && beforeClose) requestClose();
   }}
   onclick={(e) => {
-    if (dismissible && e.target === dialog) open = false;
+    if (dismissible && e.target === dialog) requestClose();
   }}
 >
   <div class="surface">
     <header>
       <h2 id={titleId}>{title}</h2>
       {#if dismissible}
-        <Button appearance="subtle" aria-label="閉じる" onclick={() => (open = false)}>
+        <Button appearance="subtle" aria-label="閉じる" onclick={requestClose}>
           <Icon name="dismiss" />
         </Button>
       {/if}

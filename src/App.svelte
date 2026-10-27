@@ -1,6 +1,8 @@
 <script lang="ts">
   import { AppState } from './app-state.svelte';
   import appIcon from './assets/app-icon.svg';
+  import BatchCard from './components/BatchCard.svelte';
+  import BatchDialog from './components/BatchDialog.svelte';
   import ConverterCard from './components/ConverterCard.svelte';
   import HelpContent from './components/HelpContent.svelte';
   import HistoryCard from './components/HistoryCard.svelte';
@@ -50,6 +52,7 @@
 
 <main>
   <div class="converter"><ConverterCard {app} /></div>
+  <div class="batch"><BatchCard /></div>
   <div class="side">
     <div class="options"><OptionsCard {app} /></div>
     <div class="presets"><PresetsCard {app} /></div>
@@ -61,6 +64,8 @@
 <Dialog bind:open={helpOpen} title="使い方" maxWidth={860}>
   <HelpContent />
 </Dialog>
+
+<BatchDialog {app} />
 
 <RestoreDialog {app} />
 
@@ -141,6 +146,10 @@
     order: 1;
   }
 
+  .batch {
+    order: 2;
+  }
+
   .options {
     order: 2;
   }
@@ -168,6 +177,7 @@
       grid-template-columns: minmax(0, 3fr) minmax(320px, 2fr);
       grid-template-areas:
         'converter converter'
+        'batch batch'
         'mapping side'
         'history history';
       align-items: start;
@@ -175,6 +185,10 @@
 
     .converter {
       grid-area: converter;
+    }
+
+    .batch {
+      grid-area: batch;
     }
 
     .mapping {

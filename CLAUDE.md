@@ -40,10 +40,12 @@ src/
       to-kana.ts        # ⑨ カタカナ化
       pipeline.ts       # 全体（途中経過も返す）
       mapping.ts        # シャッフル・一字ずらし
-    settings/    # Settings 型、localStorage、プリセット、JSON 入出力、URL 共有、履歴（純粋関数＋テスト）
+    settings/    # Settings 型、localStorage、プリセット、JSON 入出力、URL 共有、履歴、出力形式とフッター（純粋関数＋テスト）
     theme/       # トークン → CSS 変数（<style> を注入）、テーマ切替
     ui/          # Fluent 2 風の自作コンポーネント（Button, Card, Select, RadioGroup, Switch, TextField, Dialog, Toast）
-    clipboard.ts # コピー、JSON ダウンロード
+    clipboard.ts # コピー、テキスト・JSON のダウンロード
+    batch.ts     # 一括変換（文字コード判定・行分割・1 行ごとの変換。純粋関数＋テスト）
+    batch-state.svelte.ts  # 一括変換ダイアログの状態
   components/    # 画面の各カード（変換、オプション、マッピング、保存・共有、履歴、使い方）、復元ダイアログ、保存状態
   app-state.svelte.ts  # 画面全体の状態、前回の作業の自動保存と起動時の復元（SPEC §5.6）
   App.svelte     # レイアウト

@@ -1,6 +1,8 @@
 // Fluent System Icons（@fluentui/svg-icons）。使うアイコンだけをここで取り込む
 // 追加するときは icons/<名前>_<16|20>_<regular|filled>.svg を足し、ICONS に登録する
 
+import clipboardPaste16 from '@fluentui/svg-icons/icons/clipboard_paste_16_regular.svg?raw';
+import clipboardPaste20 from '@fluentui/svg-icons/icons/clipboard_paste_20_regular.svg?raw';
 import copy16 from '@fluentui/svg-icons/icons/copy_16_regular.svg?raw';
 import copy20 from '@fluentui/svg-icons/icons/copy_20_regular.svg?raw';
 import history16 from '@fluentui/svg-icons/icons/history_16_regular.svg?raw';
@@ -53,6 +55,7 @@ import warningFilled16 from '@fluentui/svg-icons/icons/warning_16_filled.svg?raw
 import warningFilled20 from '@fluentui/svg-icons/icons/warning_20_filled.svg?raw';
 
 export const ICONS = {
+  clipboard_paste: { 16: clipboardPaste16, 20: clipboardPaste20 },
   copy: { 16: copy16, 20: copy20 },
   history: { 16: history16, 20: history20 },
   arrow_left: { 16: arrowLeft16, 20: arrowLeft20 },

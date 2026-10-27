@@ -67,3 +67,16 @@ export function withFooter(body: string, footer: string | null): string {
 export function normalizeOutputFormat(value: unknown): OutputFormat {
   return OUTPUT_FORMATS.includes(value as OutputFormat) ? (value as OutputFormat) : 'output';
 }
+
+/**
+ * 履歴のグループのまとめてコピー（SPEC §6.5）。
+ * 並びは渡された順（新しい順）のまま。設定を記録していないグループにはフッターを付けない
+ */
+export function formatHistoryGroup(
+  entries: readonly Pair[],
+  settings: Settings | null,
+  format: OutputFormat,
+  baseUrl: string,
+): string {
+  return withFooter(formatPairs(entries, format), settings ? buildFooter(settings, baseUrl) : null);
+}

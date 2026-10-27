@@ -6,7 +6,7 @@
   import { convert } from '../lib/core';
   import { groupHistory, HISTORY_LIMIT, settingsKey, type HistoryEntry, type HistoryGroup } from '../lib/settings/history';
   import type { Settings } from '../lib/settings/settings';
-  import { formatPair } from '../lib/settings/output-format';
+  import { formatHistoryGroup, formatPair } from '../lib/settings/output-format';
   import { formatSummary, summarizeSettings } from '../lib/settings/summary';
   import Button from '../lib/ui/Button.svelte';
   import Card from '../lib/ui/Card.svelte';
@@ -29,6 +29,11 @@
   function restore(settings: Settings) {
     app.applySettings(settings);
     showToast('設定を復元しました（入力はそのままです）');
+  }
+
+  function copyGroup(group: HistoryGroup) {
+    const text = formatHistoryGroup(group.entries, group.settings, app.outputFormat, location.href);
+    copyText(text, `${group.entries.length} 件をコピーしました`);
   }
 
   function removeEntry(entry: HistoryEntry) {
@@ -71,6 +76,7 @@
               <span class="count">{group.entries.length} 件</span>
             </p>
             <div class="group-actions">
+              <Button size="small" appearance="primary" icon="copy" title="このグループの履歴を、コピー形式で設定のフッター付きでコピー" onclick={() => copyGroup(group)}>まとめてコピー</Button>
               {#if group.settings}
                 <Button size="small" icon={detailsOpen ? 'chevron_up' : 'chevron_down'} aria-expanded={detailsOpen} onclick={() => toggle(openGroups, groupId)}>
                   {detailsOpen ? '詳細を閉じる' : '詳細'}

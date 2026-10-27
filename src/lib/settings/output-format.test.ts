@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildFooter,
   formatPair,
+  formatHistoryGroup,
   formatPairs,
   normalizeOutputFormat,
   settingsLine,
@@ -78,5 +79,24 @@ describe('normalizeOutputFormat', () => {
     expect(normalizeOutputFormat('csv')).toBe('csv');
     expect(normalizeOutputFormat('xml')).toBe('output');
     expect(normalizeOutputFormat(null)).toBe('output');
+  });
+});
+
+describe('formatHistoryGroup', () => {
+  const entries = [
+    { input: 'さくら', output: 'シケリ' },
+    { input: 'おだ・のぶなが', output: 'アピ・ラミェリニィ' },
+  ];
+
+  it('渡された順のまま並べ、設定のフッターを 1 つ付ける', () => {
+    const text = formatHistoryGroup(entries, exampleSettings(), 'arrow', 'https://example.com/');
+    const [body, footer] = text.split('\n\n');
+    expect(body).toBe('さくら → シケリ\nおだ・のぶなが → アピ・ラミェリニィ');
+    expect(footer.split('\n')[0]).toBe('----');
+    expect(footer.match(/共有URL/g)).toHaveLength(1);
+  });
+
+  it('設定を記録していないグループにはフッターを付けない', () => {
+    expect(formatHistoryGroup(entries, null, 'output', 'https://example.com/')).toBe('シケリ\nアピ・ラミェリニィ');
   });
 });

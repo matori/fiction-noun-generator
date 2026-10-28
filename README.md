@@ -1,12 +1,12 @@
 # 創作名詞ジェネレーター
 
+https://tools.unformedbuilding.com/fiction-noun-generator/
+
 かなで入力した言葉をローマ字に分解し、子音と母音を好きなルールで入れ替えて、カタカナの架空の名詞を作るツールです。
 
 ```
 さくら → sakura → (a→i, k→s, r→m) → sisumi → シスミ
 ```
-
-> **バージョン**: v1.5.0（公開先: https://tools.unformedbuilding.com/fiction-noun-generator/）
 
 ## 機能
 

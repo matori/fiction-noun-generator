@@ -1,0 +1,75 @@
+name: Build Vite & Deploy with ssh+rsync
+
+env:
+  TZ: 'Asia/Tokyo'
+
+on:
+  push:
+    branches: main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v7
+    - name: Install Node.js
+      uses: actions/setup-node@v7
+      with:
+        node-version-file: '.node-version'
+        cache: 'npm'
+    - name: Install npm dependencies
+      run: npm ci
+    # テストか型チェックが通らなければデプロイしない
+    - name: Run tests
+      run: npm test
+    - name: Run type check
+      run: npm run check
+    - name: Run build task
+      run: npm run build
+    # rsync --delete で公開中のファイルを消してしまわないよう、ビルド結果を確認しておく
+    - name: Check build output
+      run: test -f ./dist/index.html
+    # --delete で他のツールを消さないよう、転送先がこのアプリのディレクトリか確認する
+    - name: Check deploy target
+      env:
+        REMOTE_TARGET: ${{ secrets.REMOTE_TARGET }}
+      run: |
+        case "$REMOTE_TARGET" in
+          */fiction-noun-generator|*/fiction-noun-generator/) ;;
+          *) echo "REMOTE_TARGET が fiction-noun-generator のディレクトリではありません"; exit 1 ;;
+        esac
+    - name: Set up SSH
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+      run: |
+        install -m 700 -d ~/.ssh
+        install -m 600 /dev/null ~/.ssh/deploy_key
+        install -m 600 /dev/null ~/.ssh/known_hosts
+        printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+        printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+    # ビルドのたびに更新日時が変わるので、チェックサムで比較して中身が変わったファイルだけ転送する
+    # known_hostsはREMOTE_HOSTの値に依存しないよう、HostKeyAliasの名前で照合する
+    - name: Deploy to Server
+      env:
+        REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+        REMOTE_USER: ${{ secrets.REMOTE_USER }}
+        REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
+        REMOTE_TARGET: ${{ secrets.REMOTE_TARGET }}
+      run: >-
+        rsync -rlcz --delete --delay-updates --itemize-changes
+        -e "ssh -i $HOME/.ssh/deploy_key -p $REMOTE_PORT -o StrictHostKeyChecking=yes -o HostKeyAlias=deploy-server -o UserKnownHostsFile=$HOME/.ssh/known_hosts"
+        ./dist/ "$REMOTE_USER@$REMOTE_HOST:$REMOTE_TARGET"
+    - name: Clean up SSH key
+      if: always()
+      run: rm -f ~/.ssh/deploy_key

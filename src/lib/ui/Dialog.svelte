@@ -79,8 +79,10 @@
 <style>
   dialog {
     width: min(var(--dialog-max-width), calc(100vw - 2 * var(--spacingHorizontalL)));
-    max-height: calc(100vh - 2 * var(--spacingVerticalXXXL));
+    --dialog-max-height: calc(100vh - 2 * var(--spacingVerticalXXXL));
+    max-height: var(--dialog-max-height);
     padding: 0;
+    overflow: hidden;
     border: var(--strokeWidthThin) solid var(--colorTransparentStroke);
     border-radius: var(--borderRadiusXLarge);
     background: var(--colorNeutralBackground1);
@@ -96,6 +98,9 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacingVerticalS);
+    box-sizing: border-box;
+    /* dialog の上下の枠線の分を引く */
+    max-height: calc(var(--dialog-max-height) - 2 * var(--strokeWidthThin));
     padding: var(--spacingVerticalXXL) var(--spacingHorizontalXXL);
   }
 
@@ -116,6 +121,7 @@
   }
 
   .body {
+    min-height: 0;
     overflow-y: auto;
   }
 
